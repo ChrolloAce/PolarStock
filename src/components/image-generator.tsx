@@ -10,6 +10,8 @@ import { motion } from 'framer-motion';
 import { Card } from './ui/card';
 import { CompressionOptions, CompressionSettings } from './ui/compression-options';
 import { IndustrySearch } from '@/components/ui/industry-search';
+import { ImageEditor } from '@/components/ui/image-editor';
+import { Check, X, Trash2, Image as ImageIcon, Loader2 } from 'lucide-react';
 
 // Helper function to check if two images are the same
 const isSameImage = (image1: ImageResult, image2: ImageResult) => {
@@ -100,116 +102,24 @@ export function ImageGenerator({ projectInfo, onBack }: ImageGeneratorProps) {
     }
   }, [usedImageIds]);
 
-  // Initial fetch of images when component mounts
-  useEffect(() => {
-    fetchInitialImages();
-  }, [projectInfo]);
-
   const fetchInitialImages = async () => {
-    const types = getImageTypes(imageCount);
-    const initialResults: Record<string, ImageResult | null> = {};
-    const initialLoadingState: Record<string, boolean> = {};
-    const usedIdsInThisRequest = new Set<string>(); // Track IDs used in this batch
-
-    // Initialize states
-    types.forEach(type => {
-      const imageType = type as ImageType;
-      
-      // Skip locked images - keep their current image
-      if (lockedImages.has(imageType)) {
-        initialResults[imageType] = imageResults[imageType];
-        initialLoadingState[imageType] = false;
-        return;
-      }
-      
-      // Skip deleted images
-      if (deletedImages.has(imageType)) {
-        initialResults[imageType] = null;
-        initialLoadingState[imageType] = false;
-        return;
-      }
-      
-      initialResults[imageType] = null;
-      initialLoadingState[imageType] = true;
-    });
-
-    setImageResults(initialResults);
-    setIsLoading(initialLoadingState);
-
-    // Fetch images for each type one by one to avoid duplicates
+    setIsLoading(true);
     try {
-      // First, get the base industry query
-      const baseQuery = getSearchQuery(projectInfo.businessType, projectInfo.description, '');
-      
-      // Then fetch images sequentially to ensure no duplicates
-      for (const type of types) {
-        try {
-          const imageType = type as ImageType;
-          
-          // Skip locked images - we already set them above
-          if (lockedImages.has(imageType)) {
-            continue;
-          }
-          
-          // Skip deleted images
-          if (deletedImages.has(imageType)) {
-            continue;
-          }
-          
-          // Request a batch of images (more than we need)
-          const response = await searchImages(baseQuery, 3); // Get 3 candidates
-          
-          if (response.photos.length > 0) {
-            // Find the first image that hasn't been used yet in this request
-            let selectedImage: ImageResult | null = null;
-            for (const photo of response.photos) {
-              if (!usedIdsInThisRequest.has(photo.id)) {
-                selectedImage = photo;
-                // Mark this ID as used both globally and in this request
-                usedIdsInThisRequest.add(photo.id);
-                setUsedImageIds(prev => new Set([...prev, photo.id]));
-                break;
-              }
-            }
-            
-            // If all were duplicates, just use the first one
-            if (!selectedImage && response.photos.length > 0) {
-              const firstImage = response.photos[0];
-              selectedImage = firstImage;
-              usedIdsInThisRequest.add(firstImage.id);
-              setUsedImageIds(prev => new Set([...prev, firstImage.id]));
-            }
-            
-            if (selectedImage) {
-              initialResults[imageType] = selectedImage;
-            }
-          }
-        } catch (err) {
-          console.error(`Error fetching images for ${type}:`, err);
-        }
-      }
-      
-      setImageResults(initialResults);
-      
-      const successfulResults = Object.values(initialResults).filter(Boolean);
-      if (successfulResults.length === 0) {
-        setError('No images were found for your project. Please try again with different criteria.');
-      } else if (successfulResults.length < types.length) {
-        setError('Some images could not be loaded. You can refresh to try again.');
-      } else {
-        setError(null);
-      }
-    } catch (err) {
-      console.error('Error fetching images:', err);
-      setError('Failed to fetch images. Please try again later.');
+      const images = await fetchImages(projectInfo);
+      setImages(images);
+    } catch (error) {
+      console.error('Error fetching images:', error);
     } finally {
-      const finalLoadingState: Record<string, boolean> = {};
-      types.forEach(type => {
-        finalLoadingState[type] = false;
-      });
-      setIsLoading(finalLoadingState);
+      setIsLoading(false);
     }
   };
+
+  // Initial fetch of images when component mounts
+  useEffect(() => {
+    if (projectInfo) {
+      fetchInitialImages();
+    }
+  }, [projectInfo, fetchInitialImages]);
 
   const handleRefreshAllImages = async () => {
     setIsRefreshingAll(true);

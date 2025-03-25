@@ -528,7 +528,7 @@ export default function Home() {
                 <Star className="h-4 w-4 fill-current text-gray-300" />
               </div>
               <p className="text-gray-700">
-                "As a solo developer, I don't have time to search through thousands of stock photos. PolarStock helps me find exactly what I need, fast."
+                &quot;As a solo developer, I don&apos;t have time to search through thousands of stock photos. PolarStock helps me find exactly what I need, fast.&quot;
               </p>
             </div>
           </div>

@@ -7,9 +7,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ProjectInfo } from '@/types';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { Search, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { IndustrySearch } from '@/components/ui/industry-search';
 import { Slider } from '@/components/ui/slider';
+import { Input } from '@/components/ui/input';
 
 // Form schema validation
 const projectSchema = z.object({

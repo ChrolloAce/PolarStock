@@ -143,7 +143,9 @@ export function IndustrySearch({
       {open && searchTerm && filteredIndustries.length === 0 && (
         <div className="absolute z-50 w-full mt-1 bg-white border rounded-md shadow-md">
           <div className="px-2 py-2 text-sm text-center text-muted-foreground">
-            No industry found. Press Enter to use "{searchTerm}" as your search term.
+            <p className="text-sm text-gray-500">
+              &quot;No industries found&quot;
+            </p>
           </div>
         </div>
       )}

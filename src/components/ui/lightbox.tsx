@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Download, ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
+import { X } from 'lucide-react';
 import { ImageResult } from '@/types';
 import { Button } from './button';
 
@@ -87,7 +87,7 @@ export function Lightbox({ image, isOpen, onClose, onDownload }: LightboxProps) 
                       rel="noopener noreferrer"
                       className="font-medium text-primary-600 hover:underline inline-flex items-center"
                     >
-                      {image.photographer} <ExternalLink className="h-3 w-3 ml-1" />
+                      {image.photographer}
                     </a>
                   </p>
                 </div>
@@ -99,7 +99,6 @@ export function Lightbox({ image, isOpen, onClose, onDownload }: LightboxProps) 
                       onClick={() => onDownload(image)}
                       className="flex items-center gap-1"
                     >
-                      <Download className="h-4 w-4" />
                       Download
                     </Button>
                   )}
