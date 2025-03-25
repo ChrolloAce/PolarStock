@@ -146,33 +146,52 @@ export function ImageEditor({ image, onSave, onCancel }: ImageEditorProps) {
     // Get dimensions based on aspect ratio
     const dimensions = getCanvasDimensions();
     
-    // Ensure canvas has exact dimensions for the selected aspect ratio
-    canvas.width = dimensions.width;
-    canvas.height = dimensions.height;
+    // Force dimensions based on aspect ratio - this ensures canvas matches container exactly
+    if (aspectRatio === '1:1') {
+      canvas.width = 500;
+      canvas.height = 500;
+    } else if (aspectRatio === '16:9') {
+      canvas.width = 500;
+      canvas.height = 281;
+    } else if (aspectRatio === '9:16') {
+      canvas.width = 281;
+      canvas.height = 500;
+    }
     
-    // Clear canvas with a light grid background to make dimensions more visible
+    // Clear canvas with a background pattern to show dimensions
     ctx.fillStyle = '#f9f9f9';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Create a subtle grid pattern (optional)
+    // Draw a stronger border
+    ctx.strokeStyle = '#e0e0e0';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw guide lines
     ctx.strokeStyle = '#f0f0f0';
     ctx.lineWidth = 1;
     
-    // Draw vertical grid lines
-    for (let x = 0; x < canvas.width; x += 20) {
-      ctx.beginPath();
-      ctx.moveTo(x + 0.5, 0);
-      ctx.lineTo(x + 0.5, canvas.height);
-      ctx.stroke();
-    }
+    // Vertical thirds
+    ctx.beginPath();
+    ctx.moveTo(canvas.width / 3, 0);
+    ctx.lineTo(canvas.width / 3, canvas.height);
+    ctx.stroke();
     
-    // Draw horizontal grid lines
-    for (let y = 0; y < canvas.height; y += 20) {
-      ctx.beginPath();
-      ctx.moveTo(0, y + 0.5);
-      ctx.lineTo(canvas.width, y + 0.5);
-      ctx.stroke();
-    }
+    ctx.beginPath();
+    ctx.moveTo((canvas.width / 3) * 2, 0);
+    ctx.lineTo((canvas.width / 3) * 2, canvas.height);
+    ctx.stroke();
+    
+    // Horizontal thirds
+    ctx.beginPath();
+    ctx.moveTo(0, canvas.height / 3);
+    ctx.lineTo(canvas.width, canvas.height / 3);
+    ctx.stroke();
+    
+    ctx.beginPath();
+    ctx.moveTo(0, (canvas.height / 3) * 2);
+    ctx.lineTo(canvas.width, (canvas.height / 3) * 2);
+    ctx.stroke();
     
     // Calculate scaled dimensions
     const scaledWidth = originalDimensions.width * zoom;
@@ -310,38 +329,54 @@ export function ImageEditor({ image, onSave, onCancel }: ImageEditorProps) {
         />
       </div>
       
-      <div
-        ref={containerRef}
-        className="relative max-w-full mx-auto overflow-hidden border-2 border-gray-300 rounded-lg mb-4 cursor-move"
-        style={{
-          width: canvasDimensions.width,
-          height: canvasDimensions.height,
-          aspectRatio: aspectRatio === '1:1' ? '1 / 1' : (aspectRatio === '16:9' ? '16 / 9' : '9 / 16'),
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
-        }}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-      >
-        <canvas
-          ref={canvasRef}
-          width={canvasDimensions.width}
-          height={canvasDimensions.height}
-          className="w-full h-full"
-        />
-        
-        <div className="absolute inset-0 border-2 border-white pointer-events-none">
-          <div className="absolute inset-0 border-2 border-dashed border-gray-800 opacity-70"></div>
-        </div>
-        
-        {/* Output size indicator */}
-        <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-md shadow-lg flex items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="7 17 17 17 17 7"></polyline>
-            <polyline points="7 7 7 17 17 7"></polyline>
-          </svg>
-          {canvasDimensions.width} × {canvasDimensions.height}
+      {/* Fixed ratio wrapper container */}
+      <div className="mx-auto mb-4 flex justify-center items-center">
+        <div 
+          className={`relative overflow-hidden border-4 border-primary-500 rounded-lg shadow-lg mx-auto`}
+          style={{
+            width: aspectRatio === '1:1' ? '500px' : 
+                  aspectRatio === '16:9' ? '500px' : '281px',
+            height: aspectRatio === '1:1' ? '500px' : 
+                   aspectRatio === '9:16' ? '500px' : '281px',
+          }}
+        >
+          <div
+            ref={containerRef}
+            className="absolute top-0 left-0 right-0 bottom-0 cursor-move"
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+          >
+            <canvas
+              ref={canvasRef}
+              width={canvasDimensions.width}
+              height={canvasDimensions.height}
+              className="w-full h-full"
+            />
+            
+            {/* Guide lines for better visual reference */}
+            <div className="absolute inset-0 pointer-events-none grid grid-cols-3 grid-rows-3">
+              <div className="border-r border-b border-white/30"></div>
+              <div className="border-r border-b border-white/30"></div>
+              <div className="border-b border-white/30"></div>
+              <div className="border-r border-b border-white/30"></div>
+              <div className="border-r border-b border-white/30"></div>
+              <div className="border-b border-white/30"></div>
+              <div className="border-r border-white/30"></div>
+              <div className="border-r border-white/30"></div>
+              <div></div>
+            </div>
+            
+            {/* Output size indicator */}
+            <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded-md shadow-lg flex items-center gap-1 font-mono">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="7 17 17 17 17 7"></polyline>
+                <polyline points="7 7 7 17 17 7"></polyline>
+              </svg>
+              {canvasDimensions.width} × {canvasDimensions.height}
+            </div>
+          </div>
         </div>
       </div>
       
