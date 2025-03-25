@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable react/no-unescaped-entities */
 
 import React, { useRef, useEffect } from 'react';
 import Link from 'next/link';
@@ -9,21 +10,17 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import { 
-  ImageIcon,
-  CheckCircle,
   FastForward,
   Download,
   Layers,
   Sparkles,
   ArrowRight,
-  Camera,
-  Star,
-  Quote,
   Search,
   Scissors,
   Folder,
   FileText,
-  Zap
+  Zap,
+  Star
 } from 'lucide-react';
 
 // Sample images for carousel

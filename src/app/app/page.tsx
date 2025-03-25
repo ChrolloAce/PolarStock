@@ -1,29 +1,10 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  CheckCircle,
-  FastForward,
-  Download,
-  Layers,
-  Sparkles,
-  ArrowRight,
-  Camera,
-  Star,
-  Quote,
-  Search,
-  Scissors,
-  Folder,
-  FileText,
-  Zap
-} from 'lucide-react';
 import { ProjectForm } from '@/components/forms/project-form';
 import { ImageGenerator } from '@/components/image-generator';
 import { ProjectInfo } from '@/types';

@@ -89,7 +89,7 @@ Please check individual image sources for specific license details.`
     );
     
     // Add each image to the zip file
-    await Promise.all(selectedImages.map(async (selectedImg, index) => {
+    await Promise.all(selectedImages.map(async (selectedImg) => {
       try {
         // Determine if we're working with an ImageToDownload or SelectedImage
         const isImageToDownload = 'isEdited' in selectedImg;

@@ -10,7 +10,6 @@ import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import { IndustrySearch } from '@/components/ui/industry-search';
 import { Slider } from '@/components/ui/slider';
-import { Input } from '@/components/ui/input';
 
 // Form schema validation
 const projectSchema = z.object({

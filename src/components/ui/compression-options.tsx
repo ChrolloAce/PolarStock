@@ -6,7 +6,6 @@ import { Switch } from '@/components/ui/switch';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileDown, Zap } from 'lucide-react';
-import { Label } from '@/components/ui/label';
 
 interface CompressionOptionsProps {
   isOpen: boolean;
@@ -157,8 +156,8 @@ export function CompressionOptions({ isOpen, onClose, onApply }: CompressionOpti
                   min={10}
                   max={95}
                   step={5}
-                  value={[settings.quality * 100]}
-                  onValueChange={(values) => handleQualityChange(values[0])}
+                  value={Math.round(settings.quality * 100)}
+                  onChange={handleQualityChange}
                 />
                 <p className="text-xs text-gray-500">
                   {settings.quality >= 0.8 ? 'Higher quality, larger file size' : 
@@ -176,8 +175,8 @@ export function CompressionOptions({ isOpen, onClose, onApply }: CompressionOpti
                   min={800}
                   max={3840}
                   step={160}
-                  value={[settings.maxWidthOrHeight]}
-                  onValueChange={(values) => handleMaxSizeChange(values[0])}
+                  value={settings.maxWidthOrHeight}
+                  onChange={handleMaxSizeChange}
                 />
                 <p className="text-xs text-gray-500">
                   Larger dimensions provide more detail but increase file size

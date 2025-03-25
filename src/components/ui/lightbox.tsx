@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { ImageResult } from '@/types';
 import { Button } from './button';
+import Image from 'next/image';
 
 interface LightboxProps {
   image: ImageResult;
@@ -67,10 +68,11 @@ export function Lightbox({ image, isOpen, onClose, onDownload }: LightboxProps) 
                   <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-primary-600"></div>
                 </div>
               )}
-              <img
+              <Image
                 src={image.src.large2x || image.src.large || image.src.original}
                 alt={image.alt || "Stock image"}
-                className={`w-full h-full object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+                fill
+                className={`object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
                 onLoad={() => setLoaded(true)}
               />
             </div>

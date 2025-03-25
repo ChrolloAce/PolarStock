@@ -5,18 +5,10 @@ import { getImageTypes, formatImageType, getSearchQuery } from '@/lib/utils';
 import { ImageCard } from '@/components/ui/image-card';
 import { Button } from '@/components/ui/button';
 import { generateZip, ImageToDownload } from '@/services/zipGenerator';
-import { Download, ArrowLeft, RefreshCw, CheckCircle, Zap } from 'lucide-react';
+import { Download, ArrowLeft, RefreshCw, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Card } from './ui/card';
 import { CompressionOptions, CompressionSettings } from './ui/compression-options';
 import { IndustrySearch } from '@/components/ui/industry-search';
-import { ImageEditor } from '@/components/ui/image-editor';
-import { Check, X, Trash2, Image as ImageIcon, Loader2 } from 'lucide-react';
-
-// Helper function to check if two images are the same
-const isSameImage = (image1: ImageResult, image2: ImageResult) => {
-  return image1.id === image2.id;
-};
 
 // Simple separator component
 interface SeparatorProps {
@@ -102,24 +94,13 @@ export function ImageGenerator({ projectInfo, onBack }: ImageGeneratorProps) {
     }
   }, [usedImageIds]);
 
-  const fetchInitialImages = async () => {
-    setIsLoading(true);
-    try {
-      const images = await fetchImages(projectInfo);
-      setImages(images);
-    } catch (error) {
-      console.error('Error fetching images:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   // Initial fetch of images when component mounts
   useEffect(() => {
     if (projectInfo) {
-      fetchInitialImages();
+      handleRefreshAllImages();
     }
-  }, [projectInfo, fetchInitialImages]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectInfo]);
 
   const handleRefreshAllImages = async () => {
     setIsRefreshingAll(true);
@@ -136,13 +117,7 @@ export function ImageGenerator({ projectInfo, onBack }: ImageGeneratorProps) {
     setImageHistory(updatedHistory);
     
     try {
-      // Create updated project info with current industry
-      const updatedProjectInfo = {
-        ...projectInfo,
-        description: currentIndustry
-      };
-      
-      // Use fetchInitialImages with current industry
+      // Use current industry to refresh images
       const types = getImageTypes(imageCount);
       const initialResults: Record<string, ImageResult | null> = {};
       const initialLoadingState: Record<string, boolean> = {};
@@ -174,7 +149,7 @@ export function ImageGenerator({ projectInfo, onBack }: ImageGeneratorProps) {
       setIsLoading(initialLoadingState);
   
       // Use current industry as the query
-      const baseQuery = getSearchQuery('other', currentIndustry, '');
+      const baseQuery = getSearchQuery('other', currentIndustry);
       
       // Fetch images sequentially to ensure no duplicates
       for (const type of types) {
@@ -265,7 +240,7 @@ export function ImageGenerator({ projectInfo, onBack }: ImageGeneratorProps) {
     
     try {
       // Use the current industry instead of the original project description
-      const query = getSearchQuery('other', currentIndustry, imageType);
+      const query = getSearchQuery('other', currentIndustry);
       
       // Get the next image - our updated API handles non-repeating images internally
       const response = await searchImages(query, 1);
@@ -488,12 +463,6 @@ export function ImageGenerator({ projectInfo, onBack }: ImageGeneratorProps) {
     });
     setImageHistory(updatedHistory);
     
-    // Create updated project info with new industry description
-    const updatedProjectInfo = {
-      ...projectInfo,
-      description: industry
-    };
-    
     try {
       const imageTypesList = getImageTypes(imageCount);
       const initialResults: Record<string, ImageResult | null> = {};
@@ -510,7 +479,7 @@ export function ImageGenerator({ projectInfo, onBack }: ImageGeneratorProps) {
       setIsLoading(initialLoadingState);
 
       // Get the base industry query
-      const baseQuery = getSearchQuery('other', industry, '');
+      const baseQuery = getSearchQuery('other', industry);
       
       // Then fetch images sequentially to ensure no duplicates
       for (const imageType of imageTypesList) {

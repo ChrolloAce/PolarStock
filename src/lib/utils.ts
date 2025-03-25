@@ -25,7 +25,7 @@ export function formatImageType(type: string): string {
     .join(' ');
 }
 
-export function getSearchQuery(businessType: BusinessType, description: string, imageType: string): string {
+export function getSearchQuery(businessType: BusinessType, description: string): string {
   // If we have a meaningful description from the industry search, use it directly
   if (description && description.length > 0) {
     // Just use the exact industry name without any additional terms
