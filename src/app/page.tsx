@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import { 
   FastForward,
@@ -576,6 +576,77 @@ export default function Home() {
               Start Optimizing Now
                 </Button>
               </Link>
+        </div>
+      </section>
+      
+      {/* Blog Section */}
+      <section id="blog" className="py-24 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold mb-4">Latest from Our Blog</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Discover insights, tips, and guides on stock photography and image optimization
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <Card className="overflow-hidden hover:shadow-lg transition-all">
+              <div className="aspect-video bg-gray-200 animate-pulse"></div>
+              <CardHeader>
+                <CardTitle className="hover:text-primary-600 transition-colors">Top 10 Tips for Choosing the Perfect Stock Images</CardTitle>
+                <CardDescription>Learn how to select stock images that enhance your brand and engage your audience effectively.</CardDescription>
+              </CardHeader>
+              <CardFooter>
+                <Link href="/blog/stock-image-tips">
+                  <Button variant="outline" className="group">
+                    Read Article
+                    <ArrowRight size={16} className="ml-2 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </Link>
+              </CardFooter>
+            </Card>
+            
+            <Card className="overflow-hidden hover:shadow-lg transition-all">
+              <div className="aspect-video bg-gray-200 animate-pulse"></div>
+              <CardHeader>
+                <CardTitle className="hover:text-primary-600 transition-colors">How to Optimize Images for Better Website Performance</CardTitle>
+                <CardDescription>Discover techniques to optimize your website images for faster loading times.</CardDescription>
+              </CardHeader>
+              <CardFooter>
+                <Link href="/blog/optimize-website-images">
+                  <Button variant="outline" className="group">
+                    Read Article
+                    <ArrowRight size={16} className="ml-2 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </Link>
+              </CardFooter>
+            </Card>
+            
+            <Card className="overflow-hidden hover:shadow-lg transition-all">
+              <div className="aspect-video bg-gray-200 animate-pulse"></div>
+              <CardHeader>
+                <CardTitle className="hover:text-primary-600 transition-colors">SEO Image Optimization: The Complete Guide</CardTitle>
+                <CardDescription>Learn how to optimize your images for search engines and improve your website visibility.</CardDescription>
+              </CardHeader>
+              <CardFooter>
+                <Link href="/blog/seo-image-optimization">
+                  <Button variant="outline" className="group">
+                    Read Article
+                    <ArrowRight size={16} className="ml-2 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </Link>
+              </CardFooter>
+            </Card>
+          </div>
+          
+          <div className="text-center">
+            <Link href="/blog">
+              <Button variant="gradient" size="lg" className="px-8">
+                View All Articles
+                <ArrowRight size={18} className="ml-2" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 

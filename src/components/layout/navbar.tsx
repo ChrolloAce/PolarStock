@@ -61,6 +61,9 @@ export function Navbar() {
           <Link href="/#pricing" className="text-sm font-medium hover:text-primary-600 transition-colors">
             Pricing
           </Link>
+          <Link href="/blog" className="text-sm font-medium hover:text-primary-600 transition-colors">
+            Blog
+          </Link>
           <Link href="/#faq" className="text-sm font-medium hover:text-primary-600 transition-colors">
             FAQ
           </Link>
@@ -115,6 +118,13 @@ export function Navbar() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Pricing
+            </Link>
+            <Link 
+              href="/blog" 
+              className="py-2 px-4 rounded-md hover:bg-primary-50 transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Blog
             </Link>
             <Link 
               href="/#faq" 

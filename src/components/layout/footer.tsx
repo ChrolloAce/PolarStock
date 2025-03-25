@@ -69,6 +69,47 @@ export function Footer() {
               </Link>
             </nav>
           </div>
+          <div className="w-full md:w-auto">
+            <h3 className="font-semibold text-gray-400 uppercase tracking-wider text-sm mb-4">Resources</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link
+                  href="/#pricing"
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  Pricing
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/blog"
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="https://github.com/ChrolloAce/PolarStock"
+                  className="text-gray-300 hover:text-white transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  GitHub
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/rss.xml"
+                  className="text-gray-300 hover:text-white transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  RSS Feed
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
         <div className="mt-12 border-t pt-8">
           <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-1 flex-wrap">
