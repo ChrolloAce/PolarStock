@@ -7,7 +7,6 @@ import { ProjectForm } from '@/components/forms/project-form';
 import { ImageGenerator } from '@/components/image-generator';
 import { ProjectInfo } from '@/types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 
 export default function AppPage() {

@@ -51,6 +51,23 @@ export function IndustrySearch({
     )
   }, [searchTerm])
 
+  // Create unique keys for industries
+  const getIndustryKey = (industry: string) => {
+    // Add category prefix for duplicate industries
+    switch (industry) {
+      case 'Architecture':
+        return 'Professional Services - Architecture'
+      case 'E-commerce':
+        return 'Technology - E-commerce'
+      case 'Landscaping':
+        return 'Agriculture - Landscaping'
+      case 'Moving Services':
+        return 'Transportation - Moving Services'
+      default:
+        return industry
+    }
+  }
+
   // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -98,7 +115,7 @@ export function IndustrySearch({
           <div className="py-1">
             {filteredIndustries.map((industry) => (
               <div
-                key={industry}
+                key={getIndustryKey(industry)}
                 className={cn(
                   "px-2 py-1.5 text-sm cursor-pointer flex items-center hover:bg-primary-50 hover:text-primary-600",
                   value === industry ? "bg-primary-50 text-primary-600" : ""
