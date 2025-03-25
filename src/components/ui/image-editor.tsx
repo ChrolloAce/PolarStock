@@ -38,7 +38,7 @@ export function ImageEditor({ image, onSave, onCancel }: ImageEditorProps) {
     const maxDimension = 500;
     
     if (aspectRatio === '1:1') {
-      // Perfect square
+      // Perfect square - ensure exact dimensions
       return { width: maxDimension, height: maxDimension };
     } else if (aspectRatio === '16:9') {
       // Landscape - maintain exact 16:9 ratio
@@ -63,8 +63,14 @@ export function ImageEditor({ image, onSave, onCancel }: ImageEditorProps) {
       
       let newWidth, newHeight;
       
-      if (ratio >= 1) {
-        // Landscape or square
+      if (newRatio === '1:1') {
+        // For square aspect ratio, prioritize making a perfect square
+        // Use the smaller dimension of the image to ensure it fits
+        const dimension = Math.min(img.width, img.height);
+        newWidth = dimension;
+        newHeight = dimension;
+      } else if (ratio > 1) {
+        // Landscape
         newWidth = Math.min(500, img.width);
         newHeight = newWidth / ratio;
       } else {
@@ -139,11 +145,34 @@ export function ImageEditor({ image, onSave, onCancel }: ImageEditorProps) {
     
     // Get dimensions based on aspect ratio
     const dimensions = getCanvasDimensions();
+    
+    // Ensure canvas has exact dimensions for the selected aspect ratio
     canvas.width = dimensions.width;
     canvas.height = dimensions.height;
     
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Clear canvas with a light grid background to make dimensions more visible
+    ctx.fillStyle = '#f9f9f9';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Create a subtle grid pattern (optional)
+    ctx.strokeStyle = '#f0f0f0';
+    ctx.lineWidth = 1;
+    
+    // Draw vertical grid lines
+    for (let x = 0; x < canvas.width; x += 20) {
+      ctx.beginPath();
+      ctx.moveTo(x + 0.5, 0);
+      ctx.lineTo(x + 0.5, canvas.height);
+      ctx.stroke();
+    }
+    
+    // Draw horizontal grid lines
+    for (let y = 0; y < canvas.height; y += 20) {
+      ctx.beginPath();
+      ctx.moveTo(0, y + 0.5);
+      ctx.lineTo(canvas.width, y + 0.5);
+      ctx.stroke();
+    }
     
     // Calculate scaled dimensions
     const scaledWidth = originalDimensions.width * zoom;
@@ -202,14 +231,22 @@ export function ImageEditor({ image, onSave, onCancel }: ImageEditorProps) {
     // Create a new canvas for the cropped image
     const croppedCanvas = document.createElement('canvas');
     const dimensions = getCanvasDimensions();
-    croppedCanvas.width = dimensions.width;
-    croppedCanvas.height = dimensions.height;
+    
+    // For square (1:1) aspect ratio, ensure the output is exactly 500x500
+    if (aspectRatio === '1:1') {
+      croppedCanvas.width = 500;
+      croppedCanvas.height = 500;
+    } else {
+      croppedCanvas.width = dimensions.width;
+      croppedCanvas.height = dimensions.height;
+    }
+    
     const ctx = croppedCanvas.getContext('2d');
     
     if (!ctx || !canvasRef.current) return;
     
     // Draw the cropped section to the new canvas
-    ctx.drawImage(canvasRef.current, 0, 0);
+    ctx.drawImage(canvasRef.current, 0, 0, dimensions.width, dimensions.height, 0, 0, croppedCanvas.width, croppedCanvas.height);
     
     // Convert to data URL and pass to onSave
     const dataUrl = croppedCanvas.toDataURL('image/jpeg', 0.9);
@@ -227,7 +264,7 @@ export function ImageEditor({ image, onSave, onCancel }: ImageEditorProps) {
         <div className="flex space-x-4 mb-4">
           <AspectRatioButton
             label="Landscape"
-            description="16:9"
+            description="16:9 (500×281)"
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="7" width="18" height="10" rx="2" />
@@ -239,7 +276,7 @@ export function ImageEditor({ image, onSave, onCancel }: ImageEditorProps) {
           />
           <AspectRatioButton
             label="Square"
-            description="1:1"
+            description="1:1 (500×500)"
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="5" y="5" width="14" height="14" rx="2" />
@@ -251,7 +288,7 @@ export function ImageEditor({ image, onSave, onCancel }: ImageEditorProps) {
           />
           <AspectRatioButton
             label="Portrait"
-            description="9:16"
+            description="9:16 (281×500)"
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="7" y="3" width="10" height="18" rx="2" />
@@ -275,10 +312,12 @@ export function ImageEditor({ image, onSave, onCancel }: ImageEditorProps) {
       
       <div
         ref={containerRef}
-        className="relative max-w-full mx-auto overflow-hidden border border-gray-200 rounded-lg mb-4 cursor-move"
+        className="relative max-w-full mx-auto overflow-hidden border-2 border-gray-300 rounded-lg mb-4 cursor-move"
         style={{
           width: canvasDimensions.width,
-          height: canvasDimensions.height
+          height: canvasDimensions.height,
+          aspectRatio: aspectRatio === '1:1' ? '1 / 1' : (aspectRatio === '16:9' ? '16 / 9' : '9 / 16'),
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
         }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
