@@ -26,6 +26,9 @@ export const metadata: Metadata = {
     icon: '/polarstock.png',
     apple: '/polarstock.png',
   },
+  other: {
+    'google-adsense-account': 'ca-pub-2491905367957709'
+  }
 };
 
 export const viewport: Viewport = {
@@ -46,6 +49,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
+        <meta name="google-adsense-account" content="ca-pub-2491905367957709" />
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2491905367957709"
