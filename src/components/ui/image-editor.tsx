@@ -38,7 +38,7 @@ export function ImageEditor({ image, onSave, onCancel }: ImageEditorProps) {
     const maxDimension = 500;
     
     if (aspectRatio === '1:1') {
-      // Perfect square - ensure exact dimensions
+      // Perfect square
       return { width: maxDimension, height: maxDimension };
     } else if (aspectRatio === '16:9') {
       // Landscape - maintain exact 16:9 ratio
@@ -63,14 +63,8 @@ export function ImageEditor({ image, onSave, onCancel }: ImageEditorProps) {
       
       let newWidth, newHeight;
       
-      if (newRatio === '1:1') {
-        // For square aspect ratio, prioritize making a perfect square
-        // Use the smaller dimension of the image to ensure it fits
-        const dimension = Math.min(img.width, img.height);
-        newWidth = dimension;
-        newHeight = dimension;
-      } else if (ratio > 1) {
-        // Landscape
+      if (ratio >= 1) {
+        // Landscape or square
         newWidth = Math.min(500, img.width);
         newHeight = newWidth / ratio;
       } else {
@@ -145,53 +139,11 @@ export function ImageEditor({ image, onSave, onCancel }: ImageEditorProps) {
     
     // Get dimensions based on aspect ratio
     const dimensions = getCanvasDimensions();
+    canvas.width = dimensions.width;
+    canvas.height = dimensions.height;
     
-    // Force dimensions based on aspect ratio - this ensures canvas matches container exactly
-    if (aspectRatio === '1:1') {
-      canvas.width = 500;
-      canvas.height = 500;
-    } else if (aspectRatio === '16:9') {
-      canvas.width = 500;
-      canvas.height = 281;
-    } else if (aspectRatio === '9:16') {
-      canvas.width = 281;
-      canvas.height = 500;
-    }
-    
-    // Clear canvas with a background pattern to show dimensions
-    ctx.fillStyle = '#f9f9f9';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw a stronger border
-    ctx.strokeStyle = '#e0e0e0';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw guide lines
-    ctx.strokeStyle = '#f0f0f0';
-    ctx.lineWidth = 1;
-    
-    // Vertical thirds
-    ctx.beginPath();
-    ctx.moveTo(canvas.width / 3, 0);
-    ctx.lineTo(canvas.width / 3, canvas.height);
-    ctx.stroke();
-    
-    ctx.beginPath();
-    ctx.moveTo((canvas.width / 3) * 2, 0);
-    ctx.lineTo((canvas.width / 3) * 2, canvas.height);
-    ctx.stroke();
-    
-    // Horizontal thirds
-    ctx.beginPath();
-    ctx.moveTo(0, canvas.height / 3);
-    ctx.lineTo(canvas.width, canvas.height / 3);
-    ctx.stroke();
-    
-    ctx.beginPath();
-    ctx.moveTo(0, (canvas.height / 3) * 2);
-    ctx.lineTo(canvas.width, (canvas.height / 3) * 2);
-    ctx.stroke();
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     // Calculate scaled dimensions
     const scaledWidth = originalDimensions.width * zoom;
@@ -250,22 +202,14 @@ export function ImageEditor({ image, onSave, onCancel }: ImageEditorProps) {
     // Create a new canvas for the cropped image
     const croppedCanvas = document.createElement('canvas');
     const dimensions = getCanvasDimensions();
-    
-    // For square (1:1) aspect ratio, ensure the output is exactly 500x500
-    if (aspectRatio === '1:1') {
-      croppedCanvas.width = 500;
-      croppedCanvas.height = 500;
-    } else {
-      croppedCanvas.width = dimensions.width;
-      croppedCanvas.height = dimensions.height;
-    }
-    
+    croppedCanvas.width = dimensions.width;
+    croppedCanvas.height = dimensions.height;
     const ctx = croppedCanvas.getContext('2d');
     
     if (!ctx || !canvasRef.current) return;
     
     // Draw the cropped section to the new canvas
-    ctx.drawImage(canvasRef.current, 0, 0, dimensions.width, dimensions.height, 0, 0, croppedCanvas.width, croppedCanvas.height);
+    ctx.drawImage(canvasRef.current, 0, 0);
     
     // Convert to data URL and pass to onSave
     const dataUrl = croppedCanvas.toDataURL('image/jpeg', 0.9);
@@ -283,7 +227,7 @@ export function ImageEditor({ image, onSave, onCancel }: ImageEditorProps) {
         <div className="flex space-x-4 mb-4">
           <AspectRatioButton
             label="Landscape"
-            description="16:9 (500×281)"
+            description="16:9"
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="7" width="18" height="10" rx="2" />
@@ -295,7 +239,7 @@ export function ImageEditor({ image, onSave, onCancel }: ImageEditorProps) {
           />
           <AspectRatioButton
             label="Square"
-            description="1:1 (500×500)"
+            description="1:1"
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="5" y="5" width="14" height="14" rx="2" />
@@ -307,7 +251,7 @@ export function ImageEditor({ image, onSave, onCancel }: ImageEditorProps) {
           />
           <AspectRatioButton
             label="Portrait"
-            description="9:16 (281×500)"
+            description="9:16"
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="7" y="3" width="10" height="18" rx="2" />
@@ -329,54 +273,36 @@ export function ImageEditor({ image, onSave, onCancel }: ImageEditorProps) {
         />
       </div>
       
-      {/* Fixed ratio wrapper container */}
-      <div className="mx-auto mb-4 flex justify-center items-center">
-        <div 
-          className={`relative overflow-hidden border-4 border-primary-500 rounded-lg shadow-lg mx-auto`}
-          style={{
-            width: aspectRatio === '1:1' ? '500px' : 
-                  aspectRatio === '16:9' ? '500px' : '281px',
-            height: aspectRatio === '1:1' ? '500px' : 
-                   aspectRatio === '9:16' ? '500px' : '281px',
-          }}
-        >
-          <div
-            ref={containerRef}
-            className="absolute top-0 left-0 right-0 bottom-0 cursor-move"
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-          >
-            <canvas
-              ref={canvasRef}
-              width={canvasDimensions.width}
-              height={canvasDimensions.height}
-              className="w-full h-full"
-            />
-            
-            {/* Guide lines for better visual reference */}
-            <div className="absolute inset-0 pointer-events-none grid grid-cols-3 grid-rows-3">
-              <div className="border-r border-b border-white/30"></div>
-              <div className="border-r border-b border-white/30"></div>
-              <div className="border-b border-white/30"></div>
-              <div className="border-r border-b border-white/30"></div>
-              <div className="border-r border-b border-white/30"></div>
-              <div className="border-b border-white/30"></div>
-              <div className="border-r border-white/30"></div>
-              <div className="border-r border-white/30"></div>
-              <div></div>
-            </div>
-            
-            {/* Output size indicator */}
-            <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded-md shadow-lg flex items-center gap-1 font-mono">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="7 17 17 17 17 7"></polyline>
-                <polyline points="7 7 7 17 17 7"></polyline>
-              </svg>
-              {canvasDimensions.width} × {canvasDimensions.height}
-            </div>
-          </div>
+      <div
+        ref={containerRef}
+        className="relative max-w-full mx-auto overflow-hidden border border-gray-200 rounded-lg mb-4 cursor-move"
+        style={{
+          width: canvasDimensions.width,
+          height: canvasDimensions.height
+        }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
+        <canvas
+          ref={canvasRef}
+          width={canvasDimensions.width}
+          height={canvasDimensions.height}
+          className="w-full h-full"
+        />
+        
+        <div className="absolute inset-0 border-2 border-white pointer-events-none">
+          <div className="absolute inset-0 border-2 border-dashed border-gray-800 opacity-70"></div>
+        </div>
+        
+        {/* Output size indicator */}
+        <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-md shadow-lg flex items-center gap-1">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="7 17 17 17 17 7"></polyline>
+            <polyline points="7 7 7 17 17 7"></polyline>
+          </svg>
+          {canvasDimensions.width} × {canvasDimensions.height}
         </div>
       </div>
       

@@ -50,12 +50,7 @@ export function ImageCard({
     if (editedImageUrl) {
       const img = new Image();
       img.onload = () => {
-        // For square crops, make sure we set dimensions as exactly square
-        if (Math.abs(img.width - img.height) < 5) { // Allow small tolerance for rounding
-          setEditedDimensions({ width: 500, height: 500 });
-        } else {
-          setEditedDimensions({ width: img.width, height: img.height });
-        }
+        setEditedDimensions({ width: img.width, height: img.height });
       };
       img.src = editedImageUrl;
     }
@@ -67,22 +62,8 @@ export function ImageCard({
     
     if (editedImageUrl && editedDimensions) {
       // For edited images, use the edited dimensions
-      // If dimensions are close to square (500x500), force exact square aspect ratio
-      if (Math.abs(editedDimensions.width - editedDimensions.height) < 5) {
-        return { 
-          paddingBottom: '100%',
-          aspectRatio: '1 / 1', // Force exact square
-          width: '100%',
-          height: '0'
-        };
-      }
-      
-      // For other aspect ratios
       const ratio = (editedDimensions.height / editedDimensions.width) * 100;
-      return { 
-        paddingBottom: `${ratio}%`,
-        aspectRatio: `${editedDimensions.width} / ${editedDimensions.height}`
-      };
+      return { paddingBottom: `${ratio}%` };
     } else {
       // For original images, use the original aspect ratio
       const ratio = (image.height / image.width) * 100;
@@ -154,9 +135,6 @@ export function ImageCard({
   // Get the current dimensions to display
   const displayDimensions = editedDimensions || imageDimensions;
   const hasLoadedDimensions = displayDimensions.width > 0 && displayDimensions.height > 0;
-  
-  // Determine if it's a square image
-  const isSquareImage = editedDimensions && Math.abs(editedDimensions.width - editedDimensions.height) < 5;
 
   return (
     <motion.div
@@ -175,10 +153,7 @@ export function ImageCard({
           className="relative overflow-hidden group"
           onClick={onSelect}
         >
-          <div 
-            className={`relative w-full ${isSquareImage ? 'aspect-square' : ''}`} 
-            style={getImageStyle()}
-          >
+          <div className="relative w-full" style={getImageStyle()}>
           {!isImageLoaded && !hasError && (
             <div className="absolute inset-0 flex items-center justify-center bg-gray-100 animate-pulse">
               <ImageIcon className="h-10 w-10 text-primary-300" />
@@ -191,42 +166,37 @@ export function ImageCard({
               <p className="text-sm text-gray-500">Image unavailable</p>
             </div>
             ) : (
-              <div className={`absolute inset-0 ${isSquareImage ? 'aspect-square' : ''}`}>
+              <div className="absolute inset-0">
                 {editedImageUrl ? (
-                  <div className={isSquareImage ? 'aspect-square w-full h-full' : 'w-full h-full'}>
-                    <img
-                      src={editedImageUrl}
-                      alt={image.alt || formattedType}
-                      className={cn(
-                        "w-full h-full object-cover transition-all duration-500",
-                        isSquareImage ? "object-cover aspect-square" : "object-cover",
-                        "group-hover:scale-105 group-hover:brightness-105",
-                        !isImageLoaded && "opacity-0"
-                      )}
-                      onLoad={handleImageLoad}
-                      onError={() => {
-                        setHasError(true);
-                        setIsImageLoaded(false);
-                      }}
-                    />
-                  </div>
+                  <img
+                    src={editedImageUrl}
+                    alt={image.alt || formattedType}
+                    className={cn(
+                      "w-full h-full object-cover transition-all duration-500",
+                      "group-hover:scale-105 group-hover:brightness-105",
+                      !isImageLoaded && "opacity-0"
+                    )}
+                    onLoad={handleImageLoad}
+                    onError={() => {
+                      setHasError(true);
+                      setIsImageLoaded(false);
+                    }}
+                  />
           ) : (
-            <div className="w-full h-full">
-              <img
-                src={image.src.medium}
-                alt={image.alt || formattedType}
-                className={cn(
-                  "w-full h-full object-cover transition-all duration-500",
-                  "group-hover:scale-105 group-hover:brightness-105",
-                  !isImageLoaded && "opacity-0"
-                )}
-                onLoad={handleImageLoad}
-                onError={() => {
-                  setHasError(true);
-                  setIsImageLoaded(false);
-                }}
-              />
-            </div>
+            <img
+              src={image.src.medium}
+              alt={image.alt || formattedType}
+              className={cn(
+                "w-full h-full object-cover transition-all duration-500",
+                      "group-hover:scale-105 group-hover:brightness-105",
+                !isImageLoaded && "opacity-0"
+              )}
+                    onLoad={handleImageLoad}
+              onError={() => {
+                setHasError(true);
+                setIsImageLoaded(false);
+              }}
+            />
                 )}
               </div>
             )}
